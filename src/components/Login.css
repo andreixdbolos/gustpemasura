@@ -1,0 +1,95 @@
+/* General styles for the login page */
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #ffe5b4; /* Warm, creamy background color */
+}
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+/* Login form styles */
+.login-form {
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  padding: 30px 40px;
+  width: 350px;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 2rem;
+  color: var(--button-bg);
+  margin-bottom: 20px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid var(--input-border);
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+.login-input:focus {
+  border-color: var(--button-hover);
+  box-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
+}
+
+.login-btn {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.login-btn:hover {
+  background-color: var(--button-hover);
+}
+
+.login-btn:active {
+  transform: scale(0.95);
+}
+
+/* Add a decorative cooking utensil icon above the form */
+.login-form:before {
+  content: "🍴";
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  .login-form {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .login-title {
+    font-size: 1.8rem;
+  }
+
+  .login-btn {
+    font-size: 0.9rem;
+  }
+}

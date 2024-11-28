@@ -1,0 +1,86 @@
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+.register-form {
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  padding: 30px 40px;
+  width: 350px;
+  text-align: center;
+}
+
+.register-title {
+  font-size: 2rem;
+  color: var(--button-bg);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.register-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid var(--input-border);
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+.register-input:focus {
+  border-color: var(--button-hover);
+  box-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
+}
+
+.register-btn {
+  width: 100%;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.register-btn:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+.register-btn:active {
+  transform: scale(0.95);
+}
+
+.register-form:before {
+  content: "👩‍🍳";
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .register-form {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .register-title {
+    font-size: 1.8rem;
+  }
+
+  .register-btn {
+    font-size: 0.9rem;
+  }
+}

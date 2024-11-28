@@ -1,0 +1,113 @@
+.navbar {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  width: 100vw;
+  box-sizing: border-box;
+  left: 0;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff6b3d;
+  margin-left: 5%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.navbar-brand:hover {
+  color: #ff4500;
+  transform: scale(1.05);
+}
+
+.navbar-brand:focus {
+  outline: 2px solid #ff6b3d;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-right: 5%;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: var(--nav-text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+
+.nav-button:hover {
+  background-color: rgba(255, 107, 61, 0.1);
+  color: #ff6b3d;
+}
+
+.logout-button {
+  color: #ff6b3d;
+  border: 1px solid #ff6b3d;
+}
+
+.logout-button:hover {
+  background-color: #ff6b3d;
+  color: white;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: rgba(40, 40, 40, 0.95);
+  }
+
+  .nav-button {
+    color: #ddd;
+  }
+
+  .nav-button:hover {
+    background-color: rgba(255, 143, 107, 0.2);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .nav-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.8rem;
+  }
+
+  .navbar-links {
+    width: 100%;
+    justify-content: center;
+  }
+}
