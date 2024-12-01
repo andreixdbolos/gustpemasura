@@ -111,3 +111,24 @@
     justify-content: center;
   }
 }
+
+.nav-logo {
+  background: none;
+  border: none;
+  color: var(--button-bg);
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+.nav-logo:hover {
+  transform: scale(1.05);
+  color: var(--button-hover);
+}
+
+.nav-logo:focus {
+  outline: none;
+  color: var(--button-hover);
+}

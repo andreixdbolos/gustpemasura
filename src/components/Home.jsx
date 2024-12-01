@@ -11,9 +11,10 @@ const Home = () => {
   const [ingredients, setIngredients] = useState("");
   const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState("all");
 
   const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-  const startingPrompt = `Generate a JSON file with detailed recipe ideas using ONLY the following ingredients: ${ingredients}. GIVE ME MULTIPLE RECIPES.   Each recipe should include precise measurements, cooking times, and detailed step-by-step instructions. Use this exact format:
+  const startingPrompt = `Generate a JSON file with detailed recipe ideas using ONLY the following ingredients: ${ingredients}. GIVE ME 7 RECIPES.   Each recipe should include precise measurements, cooking times, and detailed step-by-step instructions. Use this exact format:
 
   {
     "recipes": [
@@ -93,8 +94,8 @@ const Home = () => {
                 content: startingPrompt,
               },
             ],
-            temperature: 1,
-            max_tokens: 2000,
+            temperature: 0.7,
+            max_tokens: 4000,
             n: 1,
           }),
         }
@@ -107,22 +108,44 @@ const Home = () => {
       const data = await response.json();
       console.log("Raw API response:", data);
 
-      // Remove ```json and ``` markers before parsing
-      const cleanJson = data.choices[0].message.content
-        .replace(/```json\n?/, "")
-        .replace(/```$/, "");
+      let cleanJson;
+      try {
+        cleanJson = data.choices[0].message.content
+          .replace(/```json\s*/g, "")
+          .replace(/```\s*$/g, "")
+          .trim();
 
-      const parsedRecipes = JSON.parse(cleanJson);
-      console.log("Parsed recipe data:", parsedRecipes);
+        if (!cleanJson.startsWith("{")) {
+          throw new Error("Invalid JSON format");
+        }
 
-      setRecipes(parsedRecipes.recipes);
-      console.log("Final recipes state:", parsedRecipes.recipes);
+        const parsedRecipes = JSON.parse(cleanJson);
+        console.log("Parsed recipe data:", parsedRecipes);
+
+        if (!parsedRecipes.recipes || !Array.isArray(parsedRecipes.recipes)) {
+          throw new Error("Invalid recipe format");
+        }
+
+        setRecipes(parsedRecipes.recipes);
+        console.log("Final recipes state:", parsedRecipes.recipes);
+      } catch (parseError) {
+        console.error("JSON parsing error:", parseError);
+        console.log("Problematic JSON string:", cleanJson);
+        throw new Error("Failed to parse recipe data");
+      }
     } catch (error) {
       console.error("Error fetching recipes:", error);
       alert("Failed to get recipes. Please try again.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getFilteredRecipes = () => {
+    if (selectedDifficulty === "all") return recipes;
+    return recipes.filter(
+      (recipe) => recipe.difficulty.toLowerCase() === selectedDifficulty
+    );
   };
 
   return (
@@ -146,6 +169,47 @@ const Home = () => {
             onChange={(e) => setIngredients(e.target.value)}
             placeholder="Enter your ingredients (separated by commas)"
           />
+          <div className="difficulty-filter">
+            <label>Difficulty Level:</label>
+            <div className="filter-buttons">
+              <button
+                type="button"
+                className={`filter-btn ${
+                  selectedDifficulty === "all" ? "active" : ""
+                }`}
+                onClick={() => setSelectedDifficulty("all")}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                className={`filter-btn ${
+                  selectedDifficulty === "easy" ? "active" : ""
+                }`}
+                onClick={() => setSelectedDifficulty("easy")}
+              >
+                Easy
+              </button>
+              <button
+                type="button"
+                className={`filter-btn ${
+                  selectedDifficulty === "medium" ? "active" : ""
+                }`}
+                onClick={() => setSelectedDifficulty("medium")}
+              >
+                Medium
+              </button>
+              <button
+                type="button"
+                className={`filter-btn ${
+                  selectedDifficulty === "hard" ? "active" : ""
+                }`}
+                onClick={() => setSelectedDifficulty("hard")}
+              >
+                Hard
+              </button>
+            </div>
+          </div>
           <button type="submit" className="search-button" disabled={isLoading}>
             {isLoading ? "Generating..." : "Find Recipes"}
           </button>
@@ -159,7 +223,7 @@ const Home = () => {
       )}
 
       <section className="recipes-section">
-        {recipes.map((recipe, index) => (
+        {getFilteredRecipes().map((recipe, index) => (
           <Recipe
             key={index}
             recipe={{ ...recipe, id: `recipe_${index}` }}

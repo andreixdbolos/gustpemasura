@@ -19,20 +19,22 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div
-        className="navbar-brand"
+      <button
         onClick={() => navigate("/home")}
-        role="button"
-        tabIndex={0}
+        className="nav-logo"
+        aria-label="Go to homepage"
       >
         GustPeMasura
-      </div>
+      </button>
       <div className="navbar-links">
         <button onClick={() => navigate("/home")} className="nav-button">
           Home
         </button>
         <button onClick={() => navigate("/favorites")} className="nav-button">
           My Favorites
+        </button>
+        <button onClick={() => navigate("/history")} className="nav-button">
+          My Cooking History
         </button>
         <button onClick={handleLogout} className="nav-button logout-button">
           Log Out

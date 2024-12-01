@@ -314,3 +314,57 @@ form {
     transform: rotate(360deg);
   }
 }
+
+/* Difficulty Filter */
+.difficulty-filter {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.difficulty-filter label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text-color);
+  font-size: 1.1rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--button-bg);
+  background: transparent;
+  color: var(--button-bg);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background: var(--button-bg);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.filter-btn.active {
+  background: var(--button-bg);
+  color: white;
+}
+
+/* Make sure filter buttons are responsive */
+@media (max-width: 480px) {
+  .filter-buttons {
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}

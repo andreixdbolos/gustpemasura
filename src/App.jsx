@@ -7,6 +7,8 @@ import Favorites from "./components/Favorites";
 import Navbar from "./components/Navbar";
 import { ThemeProvider } from "./context/ThemeContext";
 import ThemeToggle from "./components/ThemeToggle";
+import CookingHistory from "./components/CookingHistory";
+import PrivateRoute from "./components/PrivateRoute";
 
 import "./App.css";
 
@@ -40,8 +42,30 @@ const App = () => {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/favorites" element={<Favorites />} />
+              <Route
+                path="/home"
+                element={
+                  <PrivateRoute>
+                    <Home />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/favorites"
+                element={
+                  <PrivateRoute>
+                    <Favorites />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/history"
+                element={
+                  <PrivateRoute>
+                    <CookingHistory />
+                  </PrivateRoute>
+                }
+              />
             </Routes>
             <ThemeToggle />
           </div>

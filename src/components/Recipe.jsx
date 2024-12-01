@@ -1,7 +1,14 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { db } from "../firebase/firebase";
-import { doc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  deleteDoc,
+  getDoc,
+  collection,
+  addDoc,
+} from "firebase/firestore";
 import {
   FaHeart,
   FaRegHeart,
@@ -12,11 +19,12 @@ import {
 import "./Recipe.css";
 import Timer from "./Timer";
 
-const Recipe = ({ recipe, userId, onFavoriteChange }) => {
+const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [cookingMode, setCookingMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [showCompletion, setShowCompletion] = useState(false);
 
   useEffect(() => {
     checkIfFavorite();
@@ -102,78 +110,112 @@ const Recipe = ({ recipe, userId, onFavoriteChange }) => {
     return match ? parseInt(match[1]) : null;
   };
 
+  const handleCookingComplete = async () => {
+    if (userId && !isHistoryView) {
+      try {
+        await addDoc(collection(db, "cooking_history"), {
+          userId,
+          ...recipe,
+          completedAt: new Date(),
+        });
+      } catch (error) {
+        console.error("Error saving to cooking history:", error);
+      }
+    }
+
+    setShowCompletion(true);
+    setTimeout(() => {
+      setShowCompletion(false);
+      exitCookingMode();
+    }, 3000);
+  };
+
   if (cookingMode) {
     return (
       <div className="cooking-mode-overlay">
-        <div className="cooking-mode-container">
-          <button className="exit-cooking-mode" onClick={exitCookingMode}>
-            <FaTimes />
-          </button>
-
-          <h2>{recipe.name}</h2>
-
-          <div className="recipe-meta">
-            <div className="meta-item">
-              <span>Prep Time:</span> {recipe.prepTime}
-            </div>
-            <div className="meta-item">
-              <span>Cook Time:</span> {recipe.cookTime}
-            </div>
-            <div className="meta-item">
-              <span>Difficulty:</span> {recipe.difficulty}
-            </div>
-            <div className="meta-item">
-              <span>Servings:</span> {recipe.servings.default}
-            </div>
+        {showCompletion ? (
+          <div className="completion-message">
+            <h2>🎉 Congrats! You've done great!</h2>
+            <p>Now enjoy your meal! 😋</p>
           </div>
-
-          <div className="cooking-progress">
-            Step {currentStep + 1} of {recipe.instructions.length}
-          </div>
-
-          <div className="current-step">
-            <p>{recipe.instructions[currentStep]}</p>
-            {needsTimer(recipe.instructions[currentStep]) && (
-              <Timer minutes={extractTime(recipe.instructions[currentStep])} />
-            )}
-          </div>
-
-          <div className="cooking-controls">
-            <button
-              onClick={previousStep}
-              disabled={currentStep === 0}
-              className="cooking-control-btn"
-            >
-              Previous
+        ) : (
+          <div className="cooking-mode-container">
+            <button className="exit-cooking-mode" onClick={exitCookingMode}>
+              <FaTimes />
             </button>
 
-            <button
-              onClick={nextStep}
-              disabled={currentStep === recipe.instructions.length - 1}
-              className="cooking-control-btn"
-            >
-              Next Step
-            </button>
-          </div>
+            <h2>{recipe.name}</h2>
 
-          <div className="ingredients-reference">
-            <h4>Ingredients:</h4>
-            <ul>
-              {recipe.ingredients.map((ing, index) => (
-                <li key={index}>{ing}</li>
-              ))}
-            </ul>
-          </div>
+            <div className="recipe-meta">
+              <div className="meta-item">
+                <span>Prep Time:</span> {recipe.prepTime}
+              </div>
+              <div className="meta-item">
+                <span>Cook Time:</span> {recipe.cookTime}
+              </div>
+              <div className="meta-item">
+                <span>Difficulty:</span> {recipe.difficulty}
+              </div>
+              <div className="meta-item">
+                <span>Servings:</span> {recipe.servings.default}
+              </div>
+            </div>
 
-          <div className="cooking-tips">
-            <h4>Tips:</h4>
-            <ul>
-              {recipe.tips.map((tip, index) => (
-                <li key={index}>{tip}</li>
-              ))}
-            </ul>
+            <div className="cooking-progress">
+              Step {currentStep + 1} of {recipe.instructions.length}
+            </div>
+
+            <div className="current-step">
+              <p>{recipe.instructions[currentStep]}</p>
+              {needsTimer(recipe.instructions[currentStep]) && (
+                <Timer
+                  minutes={extractTime(recipe.instructions[currentStep])}
+                />
+              )}
+            </div>
+
+            <div className="cooking-controls">
+              <button
+                onClick={previousStep}
+                disabled={currentStep === 0}
+                className="cooking-control-btn"
+              >
+                Previous
+              </button>
+
+              {currentStep === recipe.instructions.length - 1 ? (
+                <button
+                  onClick={handleCookingComplete}
+                  className="cooking-control-btn done-btn"
+                >
+                  Done! 🎉
+                </button>
+              ) : (
+                <button onClick={nextStep} className="cooking-control-btn">
+                  Next Step
+                </button>
+              )}
+            </div>
+
+            <div className="ingredients-reference">
+              <h4>Ingredients:</h4>
+              <ul>
+                {recipe.ingredients.map((ing, index) => (
+                  <li key={index}>{ing}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="cooking-tips">
+              <h4>Tips:</h4>
+              <ul>
+                {recipe.tips.map((tip, index) => (
+                  <li key={index}>{tip}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -280,6 +322,7 @@ Recipe.propTypes = {
   }).isRequired,
   userId: PropTypes.string,
   onFavoriteChange: PropTypes.func,
+  isHistoryView: PropTypes.bool,
 };
 
 export default Recipe;

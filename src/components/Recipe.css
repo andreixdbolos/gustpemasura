@@ -459,3 +459,50 @@ body.cooking-mode .cooking-mode-container {
   background: var(--button-hover);
   transform: translateY(-2px);
 }
+
+/* Completion Message */
+.completion-message {
+  background: var(--card-bg);
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  animation: fadeInScale 0.5s ease-out;
+  box-shadow: 0 4px 20px var(--card-shadow);
+}
+
+.completion-message h2 {
+  color: var(--button-bg);
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.completion-message p {
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Done Button */
+.cooking-control-btn.done-btn {
+  background: #4caf50;
+  color: white;
+  font-weight: bold;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+}
+
+.cooking-control-btn.done-btn:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+}
