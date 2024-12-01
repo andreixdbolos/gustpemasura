@@ -13,6 +13,7 @@ GustPeMasura is a web application that helps users discover recipes based on the
   - Real-time recipe generation
   - Easy-to-use navigation
   - Dark mode support
+- **Advanced Recipe Filtering**: Filter recipes by dietary preferences, meal types, and sort by preparation time, difficulty, or ratings.
 
 ## Technologies Used
 

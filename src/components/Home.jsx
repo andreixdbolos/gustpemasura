@@ -12,27 +12,59 @@ const Home = () => {
   const [recipes, setRecipes] = useState([]);
 
   const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-  const startingPrompt = `Generate a JSON file with recipe ideas using ONLY the following ingredients: ${ingredients}. Use this exact format to create recipes:
+  const startingPrompt = `Generate a JSON file with detailed recipe ideas using ONLY the following ingredients: ${ingredients}. GIVE ME MULTIPLE RECIPES.   Each recipe should include precise measurements, cooking times, and detailed step-by-step instructions. Use this exact format:
 
   {
     "recipes": [
       {
         "name": "Recipe Name",
+        "servings": {
+          "default": 4,
+          "adjustments": {
+            "2": "halve all ingredients",
+            "6": "multiply all ingredients by 1.5",
+            "8": "double all ingredients"
+          }
+        },
+        "prepTime": "15 minutes",
+        "cookTime": "25 minutes",
+        "totalTime": "40 minutes",
+        "difficulty": "easy/medium/hard",
         "ingredients": [
-          "ingredient 1",
-          "ingredient 2",
-          "ingredient 3"
+          "200g ingredient 1 🥕",
+          "2 cups ingredient 2 🧅",
+          "3 tablespoons ingredient 3 🧂"
         ],
         "instructions": [
-          "",
-          "",
-          ""
-        ]
+          "Detailed step 1 with precise measurements and timing (e.g., 'Heat olive oil in a large pan over medium heat for 2 minutes')",
+          "Step 2 with temperature guidance (e.g., 'Add onions and sauté for 5 minutes until translucent')",
+          "Step 3 with visual cues (e.g., 'Simmer sauce for 10 minutes until it coats the back of a spoon')"
+        ],
+        "tips": [
+          "Helpful tip 1 about ingredient substitution",
+          "Tip 2 about preparation technique",
+          "Storage and reheating guidance"
+        ],
+        "nutritionalInfo": {
+          "calories": "per serving",
+          "protein": "g",
+          "carbs": "g",
+          "fat": "g"
+        }
       }
     ]
   }
-  Only give me the JSON, nothing else, no other text, add emojis to the ingredients.  
-  `;
+  
+  Important guidelines:
+  - Include exact measurements in metric and imperial units
+  - Specify cooking temperatures for all heating steps
+  - Include visual cues for doneness
+  - Break down complex steps into smaller, manageable tasks
+  - Include timing for each step
+  - Add emojis to ingredients
+  - Make instructions extremely detailed and beginner-friendly
+  
+  Only give me the JSON, nothing else, no other text.`;
 
   const handleIngredientSubmit = async (e) => {
     e.preventDefault();
@@ -59,6 +91,9 @@ const Home = () => {
                 content: startingPrompt,
               },
             ],
+            temperature: 1,
+            max_tokens: 2000,
+            n: 1,
           }),
         }
       );

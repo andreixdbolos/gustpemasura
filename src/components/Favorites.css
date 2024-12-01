@@ -132,7 +132,7 @@
 }
 
 /* Dark mode support */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .favorites-container {
     background: linear-gradient(135deg, #2a2a2a 0%, #353535 100%);
   }
@@ -151,7 +151,7 @@
     background-color: rgba(50, 50, 50, 0.5);
     border-color: rgba(255, 255, 255, 0.1);
   }
-}
+} */
 
 /* Flip Card Styles */
 .flip-card {
@@ -255,15 +255,7 @@
 }
 
 /* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .flip-card-front {
-    background: rgba(40, 40, 40, 0.95);
-  }
-
-  .flip-card-back {
-    background: rgba(50, 50, 50, 0.95);
-  }
-
+/* @media (prefers-color-scheme: dark) {
   .ingredients-list li,
   .instructions-list li {
     color: #ddd;
@@ -272,7 +264,7 @@
   .card-footer {
     background: rgba(255, 107, 61, 0.2);
   }
-}
+} */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

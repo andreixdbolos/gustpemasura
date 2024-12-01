@@ -61,7 +61,7 @@
 
 .recipe-ingredients li {
   padding: 8px 0;
-  color: var(--text-color);
+  color: var(--recipe-text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -82,7 +82,7 @@
 }
 
 .recipe-instructions li {
-  color: var(--text-color);
+  color: var(--recipe-text);
   padding: 8px 0;
   line-height: 1.6;
   word-wrap: break-word;
@@ -135,7 +135,20 @@
 }
 
 .flip-card-front {
-  padding: 20px; /* Restore padding */
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 107, 61, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.flip-card-back {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 107, 61, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: rotateY(180deg);
+  padding: 20px;
 }
 
 .card-header {
@@ -156,4 +169,293 @@
     rgba(0, 0, 0, 0.2),
     rgba(0, 0, 0, 0.4)
   );
+}
+
+.cooking-mode-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  isolation: isolate;
+}
+
+.cooking-mode-container {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.exit-cooking-mode {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: var(--button-bg);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.exit-cooking-mode:hover {
+  background: rgba(255, 107, 61, 0.1);
+  transform: scale(1.1);
+}
+
+.cooking-progress {
+  color: var(--secondary-text);
+  margin: 20px 0;
+  font-size: 1.1rem;
+}
+
+.current-step {
+  background: var(--header-bg);
+  padding: 30px;
+  border-radius: 15px;
+  margin: 20px 0;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+.cooking-controls {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.cooking-control-btn {
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.cooking-control-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.cooking-control-btn:not(:disabled):hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+.ingredients-reference {
+  background: var(--header-bg);
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 30px;
+}
+
+.start-cooking-btn {
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin: 10px auto 0;
+  transition: all 0.3s ease;
+}
+
+.start-cooking-btn:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+body.cooking-mode {
+  overflow: hidden;
+  height: 100vh;
+}
+
+body.cooking-mode #root > *:not(.cooking-mode-overlay) {
+  visibility: hidden;
+}
+
+body.cooking-mode .cooking-mode-overlay,
+body.cooking-mode .cooking-mode-container {
+  visibility: visible !important;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+.recipe-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+  background: var(--header-bg);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--recipe-text);
+}
+
+.meta-item span {
+  font-weight: bold;
+  color: var(--button-bg);
+  margin-bottom: 5px;
+}
+
+.cooking-tips {
+  background: var(--header-bg);
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+.cooking-tips h4 {
+  color: var(--button-bg);
+  margin: 0 0 15px 0;
+}
+
+.cooking-tips ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cooking-tips li {
+  padding: 8px 0;
+  color: var(--recipe-text);
+  line-height: 1.6;
+}
+
+/* Update dark mode styles for flip cards */
+[data-theme="dark"] .flip-card-front,
+[data-theme="dark"] .flip-card-back {
+  background: var(--card-bg);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Update the ingredients and instructions list colors */
+.ingredients-list ul li,
+.recipe-ingredients li,
+.recipe-instructions li,
+.instructions-list li,
+.current-step p,
+.cooking-tips li {
+  color: var(--recipe-text);
+}
+
+/* Specifically target ingredients list items */
+.ingredients-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ingredients-list ul li {
+  padding: 8px 0;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+/* Update dark mode styles */
+[data-theme="dark"] .ingredients-list ul li {
+  color: var(--recipe-text);
+}
+
+/* Update small text in card footer */
+.card-footer small {
+  color: var(--secondary-text);
+}
+
+/* Ensure proper contrast for headers while keeping the orange accent */
+.recipe-header h3,
+.recipe-ingredients h4,
+.recipe-instructions h4,
+.cooking-tips h4 {
+  color: var(--button-bg);
+}
+
+/* Update meta item text color */
+.meta-item {
+  color: var(--recipe-text);
+}
+
+/* Update text colors for both ingredients and instructions lists */
+.ingredients-list ul li,
+.instructions-list ol li {
+  color: var(--recipe-text);
+  padding: 8px 0;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+/* Specifically target instructions list */
+.instructions-list ol {
+  padding-left: 20px;
+  margin: 0;
+}
+
+/* Update dark mode styles for both lists */
+[data-theme="dark"] .ingredients-list ul li,
+[data-theme="dark"] .instructions-list ol li {
+  color: var(--recipe-text);
+}
+
+.card-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  text-align: center;
+}
+
+.start-cooking-btn {
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin: 10px auto 0;
+  transition: all 0.3s ease;
+}
+
+.start-cooking-btn:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
 }

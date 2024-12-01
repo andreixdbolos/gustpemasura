@@ -2,12 +2,21 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { db } from "../firebase/firebase";
 import { doc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import {
+  FaHeart,
+  FaRegHeart,
+  FaPlay,
+  FaTimes,
+  FaStopwatch,
+} from "react-icons/fa";
 import "./Recipe.css";
+import Timer from "./Timer";
 
 const Recipe = ({ recipe, userId, onFavoriteChange }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [cookingMode, setCookingMode] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
     checkIfFavorite();
@@ -55,6 +64,120 @@ const Recipe = ({ recipe, userId, onFavoriteChange }) => {
     setIsFlipped(!isFlipped);
   };
 
+  const startCookingMode = (e) => {
+    e.stopPropagation();
+    setCookingMode(true);
+    setCurrentStep(0);
+    document.body.classList.add("cooking-mode");
+  };
+
+  const exitCookingMode = () => {
+    setCookingMode(false);
+    setCurrentStep(0);
+    document.body.classList.remove("cooking-mode");
+  };
+
+  const nextStep = () => {
+    if (currentStep < recipe.instructions.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const previousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  // Helper function to detect if step needs a timer
+  const needsTimer = (step) => {
+    const timePattern = /(\d+)\s*(minute|min|minutes|mins?)/i;
+    return timePattern.test(step);
+  };
+
+  // Extract time from step text
+  const extractTime = (step) => {
+    const timePattern = /(\d+)\s*(minute|min|minutes|mins?)/i;
+    const match = step.match(timePattern);
+    return match ? parseInt(match[1]) : null;
+  };
+
+  if (cookingMode) {
+    return (
+      <div className="cooking-mode-overlay">
+        <div className="cooking-mode-container">
+          <button className="exit-cooking-mode" onClick={exitCookingMode}>
+            <FaTimes />
+          </button>
+
+          <h2>{recipe.name}</h2>
+
+          <div className="recipe-meta">
+            <div className="meta-item">
+              <span>Prep Time:</span> {recipe.prepTime}
+            </div>
+            <div className="meta-item">
+              <span>Cook Time:</span> {recipe.cookTime}
+            </div>
+            <div className="meta-item">
+              <span>Difficulty:</span> {recipe.difficulty}
+            </div>
+            <div className="meta-item">
+              <span>Servings:</span> {recipe.servings.default}
+            </div>
+          </div>
+
+          <div className="cooking-progress">
+            Step {currentStep + 1} of {recipe.instructions.length}
+          </div>
+
+          <div className="current-step">
+            <p>{recipe.instructions[currentStep]}</p>
+            {needsTimer(recipe.instructions[currentStep]) && (
+              <Timer minutes={extractTime(recipe.instructions[currentStep])} />
+            )}
+          </div>
+
+          <div className="cooking-controls">
+            <button
+              onClick={previousStep}
+              disabled={currentStep === 0}
+              className="cooking-control-btn"
+            >
+              Previous
+            </button>
+
+            <button
+              onClick={nextStep}
+              disabled={currentStep === recipe.instructions.length - 1}
+              className="cooking-control-btn"
+            >
+              Next Step
+            </button>
+          </div>
+
+          <div className="ingredients-reference">
+            <h4>Ingredients:</h4>
+            <ul>
+              {recipe.ingredients.map((ing, index) => (
+                <li key={index}>{ing}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="cooking-tips">
+            <h4>Tips:</h4>
+            <ul>
+              {recipe.tips.map((tip, index) => (
+                <li key={index}>{tip}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`flip-card ${isFlipped ? "is-flipped" : ""}`}
@@ -89,6 +212,9 @@ const Recipe = ({ recipe, userId, onFavoriteChange }) => {
           </div>
           <div className="card-footer">
             <small>Click to see instructions</small>
+            <button className="start-cooking-btn" onClick={startCookingMode}>
+              <FaPlay /> Start Cooking
+            </button>
           </div>
         </div>
 
@@ -120,6 +246,9 @@ const Recipe = ({ recipe, userId, onFavoriteChange }) => {
           </div>
           <div className="card-footer">
             <small>Click to see ingredients</small>
+            <button className="start-cooking-btn" onClick={startCookingMode}>
+              <FaPlay /> Start Cooking
+            </button>
           </div>
         </div>
       </div>
@@ -131,8 +260,23 @@ Recipe.propTypes = {
   recipe: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    servings: PropTypes.shape({
+      default: PropTypes.number.isRequired,
+      adjustments: PropTypes.object.isRequired,
+    }).isRequired,
+    prepTime: PropTypes.string.isRequired,
+    cookTime: PropTypes.string.isRequired,
+    totalTime: PropTypes.string.isRequired,
+    difficulty: PropTypes.string.isRequired,
     ingredients: PropTypes.arrayOf(PropTypes.string).isRequired,
     instructions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    tips: PropTypes.arrayOf(PropTypes.string).isRequired,
+    nutritionalInfo: PropTypes.shape({
+      calories: PropTypes.string.isRequired,
+      protein: PropTypes.string.isRequired,
+      carbs: PropTypes.string.isRequired,
+      fat: PropTypes.string.isRequired,
+    }).isRequired,
   }).isRequired,
   userId: PropTypes.string,
   onFavoriteChange: PropTypes.func,
