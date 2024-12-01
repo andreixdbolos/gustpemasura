@@ -10,6 +10,7 @@ const Home = () => {
   const { currentUser } = useAuth();
   const [ingredients, setIngredients] = useState("");
   const [recipes, setRecipes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
   const startingPrompt = `Generate a JSON file with detailed recipe ideas using ONLY the following ingredients: ${ingredients}. GIVE ME MULTIPLE RECIPES.   Each recipe should include precise measurements, cooking times, and detailed step-by-step instructions. Use this exact format:
@@ -74,6 +75,7 @@ const Home = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await fetch(
         "https://api.openai.com/v1/chat/completions",
@@ -118,6 +120,8 @@ const Home = () => {
     } catch (error) {
       console.error("Error fetching recipes:", error);
       alert("Failed to get recipes. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -142,11 +146,17 @@ const Home = () => {
             onChange={(e) => setIngredients(e.target.value)}
             placeholder="Enter your ingredients (separated by commas)"
           />
-          <button type="submit" className="search-button">
-            Find Recipes
+          <button type="submit" className="search-button" disabled={isLoading}>
+            {isLoading ? "Generating..." : "Find Recipes"}
           </button>
         </form>
       </section>
+
+      {isLoading && (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
+      )}
 
       <section className="recipes-section">
         {recipes.map((recipe, index) => (
