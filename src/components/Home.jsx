@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
@@ -12,6 +12,7 @@ const Home = () => {
   const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
+  const recipesSectionRef = useRef(null);
 
   const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
   const startingPrompt = `Generate a JSON file with detailed recipe ideas using ONLY the following ingredients: ${ingredients}. GIVE ME 7 RECIPES.   Each recipe should include precise measurements, cooking times, and detailed step-by-step instructions. Use this exact format:
@@ -70,11 +71,7 @@ const Home = () => {
 
   const handleIngredientSubmit = async (e) => {
     e.preventDefault();
-
-    if (!ingredients.trim()) {
-      alert("Please enter some ingredients");
-      return;
-    }
+    if (!ingredients.trim()) return;
 
     setIsLoading(true);
     try {
@@ -90,52 +87,43 @@ const Home = () => {
             model: "gpt-4o-mini",
             messages: [
               {
+                role: "system",
+                content:
+                  "You are a JSON-only response bot. Never include markdown formatting or explanation text. Return only valid JSON data.",
+              },
+              {
                 role: "user",
                 content: startingPrompt,
               },
             ],
             temperature: 0.7,
-            max_tokens: 4000,
-            n: 1,
           }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch recipes");
-      }
-
       const data = await response.json();
-      console.log("Raw API response:", data);
+      if (data.choices && data.choices[0]) {
+        try {
+          // Clean any potential formatting from the response
+          const cleanedContent = data.choices[0].message.content
+            .replace(/```json\s*/g, "")
+            .replace(/```\s*/g, "")
+            .replace(/^\s*{\s*/, "{") // Clean leading whitespace
+            .replace(/\s*}\s*$/, "}") // Clean trailing whitespace
+            .trim();
 
-      let cleanJson;
-      try {
-        cleanJson = data.choices[0].message.content
-          .replace(/```json\s*/g, "")
-          .replace(/```\s*$/g, "")
-          .trim();
-
-        if (!cleanJson.startsWith("{")) {
-          throw new Error("Invalid JSON format");
+          const recipesData = JSON.parse(cleanedContent);
+          setRecipes(recipesData.recipes);
+          setTimeout(() => {
+            recipesSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        } catch (parseError) {
+          console.error("Error parsing JSON:", parseError);
+          console.log("Raw content:", data.choices[0].message.content);
         }
-
-        const parsedRecipes = JSON.parse(cleanJson);
-        console.log("Parsed recipe data:", parsedRecipes);
-
-        if (!parsedRecipes.recipes || !Array.isArray(parsedRecipes.recipes)) {
-          throw new Error("Invalid recipe format");
-        }
-
-        setRecipes(parsedRecipes.recipes);
-        console.log("Final recipes state:", parsedRecipes.recipes);
-      } catch (parseError) {
-        console.error("JSON parsing error:", parseError);
-        console.log("Problematic JSON string:", cleanJson);
-        throw new Error("Failed to parse recipe data");
       }
     } catch (error) {
-      console.error("Error fetching recipes:", error);
-      alert("Failed to get recipes. Please try again.");
+      console.error("Error generating recipes:", error);
     } finally {
       setIsLoading(false);
     }
@@ -222,7 +210,7 @@ const Home = () => {
         </div>
       )}
 
-      <section className="recipes-section">
+      <section className="recipes-section" ref={recipesSectionRef}>
         {getFilteredRecipes().map((recipe, index) => (
           <Recipe
             key={index}
