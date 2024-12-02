@@ -9,6 +9,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import ThemeToggle from "./components/ThemeToggle";
 import CookingHistory from "./components/CookingHistory";
 import PrivateRoute from "./components/PrivateRoute";
+import About from "./components/About";
 
 import "./App.css";
 
@@ -66,6 +67,7 @@ const App = () => {
                   </PrivateRoute>
                 }
               />
+              <Route path="/about" element={<About />} />
             </Routes>
             <ThemeToggle />
           </div>

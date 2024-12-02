@@ -30,11 +30,15 @@ const Navbar = () => {
         <button onClick={() => navigate("/home")} className="nav-button">
           Home
         </button>
+
         <button onClick={() => navigate("/favorites")} className="nav-button">
           My Favorites
         </button>
         <button onClick={() => navigate("/history")} className="nav-button">
           My Cooking History
+        </button>
+        <button onClick={() => navigate("/about")} className="nav-button">
+          About
         </button>
         <button onClick={handleLogout} className="nav-button logout-button">
           Log Out

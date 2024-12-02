@@ -1,0 +1,160 @@
+.about-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--text-color);
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.about-header h1 {
+  color: var(--button-bg);
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.tagline {
+  font-size: 1.4rem;
+  color: var(--secondary-text);
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.about-description {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-description p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+/* Features Section */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.feature-card {
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.feature-card h3 {
+  color: var(--button-bg);
+  margin-bottom: 10px;
+}
+
+/* Tutorial Section */
+.tutorial-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.tutorial-step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+.step-number {
+  background-color: var(--button-bg);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  color: var(--button-bg);
+  margin-bottom: 10px;
+}
+
+.step-content p {
+  line-height: 1.6;
+}
+
+/* Get Started Section */
+.get-started-section {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.get-started-btn {
+  display: inline-block;
+  background-color: var(--button-bg);
+  color: white;
+  padding: 15px 40px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 1.2rem;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.get-started-btn:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .tagline {
+    font-size: 1.2rem;
+  }
+
+  .tutorial-step {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .step-number {
+    margin: 0 auto 15px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
