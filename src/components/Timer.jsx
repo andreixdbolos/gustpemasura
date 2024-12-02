@@ -8,6 +8,11 @@ const Timer = ({ minutes }) => {
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
+    setTimeLeft(minutes * 60);
+    setIsRunning(false);
+  }, [minutes]);
+
+  useEffect(() => {
     let interval;
     if (isRunning && timeLeft > 0) {
       interval = setInterval(() => {
@@ -15,11 +20,14 @@ const Timer = ({ minutes }) => {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
-      // Play sound when timer is done
-      const audio = new Audio("/timer-done.mp3"); // You'll need to add this sound file
+      const audio = new Audio("/timer-done.mp3");
       audio.play();
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [isRunning, timeLeft]);
 
   const toggleTimer = () => {

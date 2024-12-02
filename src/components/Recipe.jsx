@@ -22,7 +22,7 @@ import Timer from "./Timer";
 const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [cookingMode, setCookingMode] = useState(false);
+  const [isCookingMode, setIsCookingMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
 
@@ -74,13 +74,13 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
 
   const startCookingMode = (e) => {
     e.stopPropagation();
-    setCookingMode(true);
+    setIsCookingMode(true);
     setCurrentStep(0);
     document.body.classList.add("cooking-mode");
   };
 
   const exitCookingMode = () => {
-    setCookingMode(false);
+    setIsCookingMode(false);
     setCurrentStep(0);
     document.body.classList.remove("cooking-mode");
   };
@@ -97,18 +97,17 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
     }
   };
 
-  // Helper function to detect if step needs a timer
-  const needsTimer = (step) => {
-    const timePattern = /(\d+)\s*(minute|min|minutes|mins?)/i;
-    return timePattern.test(step);
-  };
-
-  // Extract time from step text
-  const extractTime = (step) => {
-    const timePattern = /(\d+)\s*(minute|min|minutes|mins?)/i;
-    const match = step.match(timePattern);
+  // Function to extract timer duration from step text
+  const getTimerDuration = (stepText) => {
+    const timeRegex = /(\d+)[\s-]*minutes?/i;
+    const match = stepText.match(timeRegex);
     return match ? parseInt(match[1]) : null;
   };
+
+  // Get current step's timer duration
+  const currentStepTimer = isCookingMode
+    ? getTimerDuration(recipe.instructions[currentStep])
+    : null;
 
   const handleCookingComplete = async () => {
     if (userId && !isHistoryView) {
@@ -130,7 +129,7 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
     }, 3000);
   };
 
-  if (cookingMode) {
+  if (isCookingMode) {
     return (
       <div className="cooking-mode-overlay">
         {showCompletion ? (
@@ -167,10 +166,8 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
 
             <div className="current-step">
               <p>{recipe.instructions[currentStep]}</p>
-              {needsTimer(recipe.instructions[currentStep]) && (
-                <Timer
-                  minutes={extractTime(recipe.instructions[currentStep])}
-                />
+              {currentStepTimer && (
+                <Timer minutes={currentStepTimer} key={currentStep} />
               )}
             </div>
 
