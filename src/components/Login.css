@@ -1,9 +1,8 @@
-/* General styles for the login page */
 body {
   font-family: "Poppins", sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #ffe5b4; /* Warm, creamy background color */
+  background-color: #ffe5b4;
 }
 
 .login-page {
@@ -14,7 +13,6 @@ body {
   background-color: var(--background-color);
 }
 
-/* Login form styles */
 .login-form {
   background-color: var(--card-bg);
   border-radius: 10px;
@@ -70,7 +68,6 @@ body {
   transform: scale(0.95);
 }
 
-/* Add a decorative cooking utensil icon above the form */
 .login-form:before {
   content: "🍴";
   font-size: 3rem;
@@ -78,7 +75,6 @@ body {
   margin-bottom: 10px;
 }
 
-/* Responsive design for mobile */
 @media (max-width: 768px) {
   .login-form {
     width: 90%;

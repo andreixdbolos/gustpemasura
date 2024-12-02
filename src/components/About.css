@@ -70,7 +70,6 @@
   margin-bottom: 10px;
 }
 
-/* Tutorial Section */
 .tutorial-steps {
   display: flex;
   flex-direction: column;
@@ -111,7 +110,6 @@
   line-height: 1.6;
 }
 
-/* Get Started Section */
 .get-started-section {
   text-align: center;
   margin-top: 40px;

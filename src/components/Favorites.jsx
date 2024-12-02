@@ -65,7 +65,6 @@ const RecipeCard = ({ recipe, userId, onFavoriteChange }) => {
           </div>
         </div>
 
-        {/* Back of the card */}
         <div className="flip-card-back">
           <div className="card-header">
             <h3>Instructions</h3>

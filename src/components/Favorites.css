@@ -40,7 +40,6 @@
   min-height: inherit;
 }
 
-/* Custom styling for recipe cards within favorites */
 .favorites-grid .recipe-card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -80,7 +79,6 @@
   border: 1px solid rgba(255, 107, 61, 0.1);
 }
 
-/* Empty state styling */
 .favorites-empty {
   text-align: center;
   padding: 40px;
@@ -97,13 +95,11 @@
   max-width: 90%;
 }
 
-/* Loading state */
 .favorites-loading {
   text-align: center;
   padding: 40px;
 }
 
-/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -115,7 +111,6 @@
   }
 }
 
-/* Responsive design */
 @media (max-width: 1200px) {
   .favorites-grid {
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -144,34 +139,11 @@
   }
 }
 
-/* Dark mode support */
-/* @media (prefers-color-scheme: dark) {
-  .favorites-container {
-    background: linear-gradient(135deg, #2a2a2a 0%, #353535 100%);
-  }
-
-  .favorites-container h1 {
-    color: #ff8f6b;
-  }
-
-  .favorites-grid .recipe-card {
-    background: rgba(40, 40, 40, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .favorites-grid .recipe-ingredients,
-  .favorites-grid .recipe-instructions {
-    background-color: rgba(50, 50, 50, 0.5);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-} */
-
-/* Flip Card Styles */
 .flip-card {
   background-color: transparent;
   perspective: 1000px;
   cursor: pointer;
-  height: 400px; /* Fixed height for consistency */
+  height: 400px;
 }
 
 .flip-card-inner {
@@ -281,7 +253,6 @@
   }
 }
 
-/* Add these new styles */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -315,7 +286,6 @@
   height: 16px;
 }
 
-/* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
   .remove-btn {
     color: #ff8f6b;
@@ -326,7 +296,6 @@
   }
 }
 
-/* Update existing flip-card styles to accommodate the header */
 .flip-card-front,
 .flip-card-back {
   display: flex;

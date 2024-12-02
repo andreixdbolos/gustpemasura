@@ -104,12 +104,11 @@ const Home = () => {
       const data = await response.json();
       if (data.choices && data.choices[0]) {
         try {
-          // Clean any potential formatting from the response
           const cleanedContent = data.choices[0].message.content
             .replace(/```json\s*/g, "")
             .replace(/```\s*/g, "")
-            .replace(/^\s*{\s*/, "{") // Clean leading whitespace
-            .replace(/\s*}\s*$/, "}") // Clean trailing whitespace
+            .replace(/^\s*{\s*/, "{")
+            .replace(/\s*}\s*$/, "}")
             .trim();
 
           const recipesData = JSON.parse(cleanedContent);

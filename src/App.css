@@ -143,7 +143,6 @@ body {
   box-shadow: 0 4px 8px rgba(255, 69, 0, 0.2);
 }
 
-/* Add responsive styles for the landing buttons */
 @media (max-width: 768px) {
   .landing-buttons {
     flex-direction: column;

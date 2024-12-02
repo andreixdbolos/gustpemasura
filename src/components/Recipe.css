@@ -113,7 +113,6 @@
   outline: none;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .recipe-card {
     padding: 20px;
@@ -129,9 +128,8 @@
   }
 }
 
-/* Add these new styles for the image */
 .flip-card {
-  height: 400px; /* Reduced height since we removed the image */
+  height: 400px;
 }
 
 .flip-card-front {
@@ -162,7 +160,6 @@
   margin-top: 10px;
 }
 
-/* Dark mode adjustments */
 [data-theme="dark"] .recipe-image-container::after {
   background: linear-gradient(
     to bottom,
@@ -357,14 +354,12 @@ body.cooking-mode .cooking-mode-container {
   line-height: 1.6;
 }
 
-/* Update dark mode styles for flip cards */
 [data-theme="dark"] .flip-card-front,
 [data-theme="dark"] .flip-card-back {
   background: var(--card-bg);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Update the ingredients and instructions list colors */
 .ingredients-list ul li,
 .recipe-ingredients li,
 .recipe-instructions li,
@@ -374,7 +369,6 @@ body.cooking-mode .cooking-mode-container {
   color: var(--recipe-text);
 }
 
-/* Specifically target ingredients list items */
 .ingredients-list ul {
   list-style-type: none;
   padding: 0;
@@ -387,17 +381,14 @@ body.cooking-mode .cooking-mode-container {
   word-wrap: break-word;
 }
 
-/* Update dark mode styles */
 [data-theme="dark"] .ingredients-list ul li {
   color: var(--recipe-text);
 }
 
-/* Update small text in card footer */
 .card-footer small {
   color: var(--secondary-text);
 }
 
-/* Ensure proper contrast for headers while keeping the orange accent */
 .recipe-header h3,
 .recipe-ingredients h4,
 .recipe-instructions h4,
@@ -405,12 +396,10 @@ body.cooking-mode .cooking-mode-container {
   color: var(--button-bg);
 }
 
-/* Update meta item text color */
 .meta-item {
   color: var(--recipe-text);
 }
 
-/* Update text colors for both ingredients and instructions lists */
 .ingredients-list ul li,
 .instructions-list ol li {
   color: var(--recipe-text);
@@ -419,13 +408,11 @@ body.cooking-mode .cooking-mode-container {
   word-wrap: break-word;
 }
 
-/* Specifically target instructions list */
 .instructions-list ol {
   padding-left: 20px;
   margin: 0;
 }
 
-/* Update dark mode styles for both lists */
 [data-theme="dark"] .ingredients-list ul li,
 [data-theme="dark"] .instructions-list ol li {
   color: var(--recipe-text);
@@ -460,7 +447,6 @@ body.cooking-mode .cooking-mode-container {
   transform: translateY(-2px);
 }
 
-/* Completion Message */
 .completion-message {
   background: var(--card-bg);
   padding: 40px;
@@ -492,7 +478,6 @@ body.cooking-mode .cooking-mode-container {
   }
 }
 
-/* Done Button */
 .cooking-control-btn.done-btn {
   background: #4caf50;
   color: white;

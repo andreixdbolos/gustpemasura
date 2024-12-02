@@ -38,7 +38,7 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
   };
 
   const toggleFavorite = async (e) => {
-    e.stopPropagation(); // Prevent card flip when clicking favorite button
+    e.stopPropagation();
     if (!userId) return;
 
     const favoriteRef = doc(db, "favorites", `${userId}_${recipe.id}`);
@@ -97,14 +97,12 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
     }
   };
 
-  // Function to extract timer duration from step text
   const getTimerDuration = (stepText) => {
     const timeRegex = /(\d+)[\s-]*minutes?/i;
     const match = stepText.match(timeRegex);
     return match ? parseInt(match[1]) : null;
   };
 
-  // Get current step's timer duration
   const currentStepTimer = isCookingMode
     ? getTimerDuration(recipe.instructions[currentStep])
     : null;
@@ -223,7 +221,6 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
       onClick={handleClick}
     >
       <div className="flip-card-inner">
-        {/* Front of the card */}
         <div className="flip-card-front">
           <div className="card-header">
             <h3>{recipe.name}</h3>
@@ -257,7 +254,6 @@ const Recipe = ({ recipe, userId, onFavoriteChange, isHistoryView }) => {
           </div>
         </div>
 
-        {/* Back of the card */}
         <div className="flip-card-back">
           <div className="card-header">
             <h3>{recipe.name}</h3>
