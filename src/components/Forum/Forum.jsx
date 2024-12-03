@@ -27,8 +27,6 @@ const Forum = () => {
   const { currentUser } = useAuth();
 
   const [recipePosts, setRecipePosts] = useState([]);
-  const [replyingTo, setReplyingTo] = useState(null);
-  const [replyText, setReplyText] = useState("");
 
   const categories = [
     { id: "all", label: "All Posts" },
@@ -159,24 +157,157 @@ const Forum = () => {
     }
   };
 
-  const handleComment = async (postId) => {
-    if (!commentText[postId]?.trim()) return;
+  const handleComment = async (
+    postId,
+    parentComment = null,
+    replyContent = null
+  ) => {
+    const commentContent = parentComment ? replyContent : commentText[postId];
+    if (!commentContent?.trim()) return;
 
     try {
       const postRef = doc(db, "forum_posts", postId);
+      const postDoc = await getDoc(postRef);
+      const currentComments = postDoc.data().comments || [];
+
+      const newComment = {
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        text: commentContent,
+        userId: currentUser.uid,
+        userName: currentUser.email,
+        createdAt: new Date().toISOString(),
+        replyTo: parentComment ? parentComment.userName : null,
+      };
+
       await updateDoc(postRef, {
-        comments: arrayUnion({
-          text: commentText[postId],
-          userId: currentUser.uid,
-          userName: currentUser.email,
-          createdAt: new Date().toISOString(),
-        }),
+        comments: arrayUnion(newComment),
       });
-      setCommentText((prev) => ({ ...prev, [postId]: "" }));
+
+      if (!parentComment) {
+        setCommentText((prev) => ({ ...prev, [postId]: "" }));
+      }
+
       fetchPosts();
     } catch (error) {
       console.error("Error adding comment:", error);
     }
+  };
+
+  const buildCommentTree = (comments) => {
+    if (!comments) return [];
+
+    const commentMap = {};
+    const rootComments = [];
+
+    comments.forEach((comment, index) => {
+      const commentId = comment.id || `${comment.createdAt}-${index}`;
+      commentMap[commentId] = {
+        ...comment,
+        id: commentId,
+        replies: [],
+      };
+    });
+
+    comments.forEach((comment, index) => {
+      const commentId = comment.id || `${comment.createdAt}-${index}`;
+      const commentWithReplies = commentMap[commentId];
+
+      if (comment.replyTo) {
+        const parentComment = Object.values(commentMap).find(
+          (c) => c.userName === comment.replyTo
+        );
+        if (parentComment) {
+          parentComment.replies.push(commentWithReplies);
+        } else {
+          rootComments.push(commentWithReplies);
+        }
+      } else {
+        rootComments.push(commentWithReplies);
+      }
+    });
+
+    return rootComments;
+  };
+
+  const CommentThread = ({ comment, postId, level = 0 }) => {
+    const [isReplying, setIsReplying] = useState(false);
+    const [localReplyText, setLocalReplyText] = useState("");
+
+    const handleReply = () => {
+      handleComment(postId, comment, localReplyText);
+      setIsReplying(false);
+      setLocalReplyText("");
+    };
+
+    return (
+      <div className={`comment-thread level-${level}`}>
+        <div className="comment">
+          <div className="comment-header">
+            <span className="comment-author">
+              {comment.replyTo ? (
+                <span className="reply-to">
+                  {comment.userName}
+                  <span className="reply-to-arrow">→</span>
+                  {comment.replyTo}
+                </span>
+              ) : (
+                comment.userName
+              )}
+            </span>
+            <span className="comment-date">
+              {new Date(comment.createdAt).toLocaleDateString()}
+            </span>
+          </div>
+          <div className="comment-text">{comment.text}</div>
+          <div className="comment-actions">
+            <button
+              className="reply-btn"
+              onClick={() => setIsReplying(!isReplying)}
+            >
+              Reply
+            </button>
+          </div>
+
+          {isReplying && (
+            <div className="reply-form">
+              <textarea
+                value={localReplyText}
+                onChange={(e) => setLocalReplyText(e.target.value)}
+                placeholder={`Reply to ${comment.userName}...`}
+                className="comment-input"
+              />
+              <div className="reply-actions">
+                <button onClick={handleReply} className="comment-submit-btn">
+                  Reply
+                </button>
+                <button
+                  onClick={() => {
+                    setIsReplying(false);
+                    setLocalReplyText("");
+                  }}
+                  className="comment-cancel-btn"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {comment.replies && comment.replies.length > 0 && (
+          <div className={`comment-replies level-${level}`}>
+            {comment.replies.map((reply) => (
+              <CommentThread
+                key={reply.id}
+                comment={reply}
+                postId={postId}
+                level={level + 1}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const toggleComments = (postId) => {
@@ -184,28 +315,6 @@ const Forum = () => {
       ...prev,
       [postId]: !prev[postId],
     }));
-  };
-
-  const handleReply = async (postId, commentId, originalAuthor) => {
-    if (!replyText.trim()) return;
-
-    try {
-      const postRef = doc(db, "forum_posts", postId);
-      await updateDoc(postRef, {
-        comments: arrayUnion({
-          text: replyText,
-          userId: currentUser.uid,
-          userName: currentUser.email,
-          createdAt: new Date().toISOString(),
-          replyTo: originalAuthor,
-        }),
-      });
-      setReplyText("");
-      setReplyingTo(null);
-      fetchPosts();
-    } catch (error) {
-      console.error("Error adding reply:", error);
-    }
   };
 
   return (
@@ -315,66 +424,13 @@ const Forum = () => {
                 {showComments[post.id] && (
                   <div className="comments-section">
                     <div className="comments-list">
-                      {post.comments?.map((comment, index) => (
-                        <div key={index} className="comment">
-                          <div className="comment-header">
-                            <span className="comment-author">
-                              {comment.replyTo && (
-                                <span className="reply-to">
-                                  {comment.userName}
-                                  <span className="reply-to-arrow">→</span>
-                                  {comment.replyTo}
-                                </span>
-                              )}
-                              {!comment.replyTo && comment.userName}
-                            </span>
-                            <span className="comment-date">
-                              {new Date(comment.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <div className="comment-text">{comment.text}</div>
-                          <div className="comment-actions">
-                            <button
-                              className="reply-btn"
-                              onClick={() => setReplyingTo(index)}
-                            >
-                              Reply
-                            </button>
-                          </div>
-                          {replyingTo === index && (
-                            <div className="reply-form">
-                              <textarea
-                                value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
-                                placeholder={`Reply to ${comment.userName}...`}
-                                className="comment-input"
-                              />
-                              <div className="reply-actions">
-                                <button
-                                  onClick={() =>
-                                    handleReply(
-                                      post.id,
-                                      index,
-                                      comment.userName
-                                    )
-                                  }
-                                  className="comment-submit-btn"
-                                >
-                                  Reply
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setReplyingTo(null);
-                                    setReplyText("");
-                                  }}
-                                  className="comment-cancel-btn"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                      {buildCommentTree(post.comments || []).map((comment) => (
+                        <CommentThread
+                          key={comment.id}
+                          comment={comment}
+                          postId={post.id}
+                          level={0}
+                        />
                       ))}
                     </div>
                     <div className="add-comment">

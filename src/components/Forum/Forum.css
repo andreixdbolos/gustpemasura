@@ -211,6 +211,7 @@ h1 {
   margin-top: 8px;
   padding-left: 20px;
   border-left: 2px solid var(--button-bg);
+  margin-bottom: 10px;
 }
 
 .comment-text {
@@ -420,4 +421,63 @@ h1 {
   backdrop-filter: blur(4px);
   z-index: 100004;
   border-radius: 16px;
+}
+
+/* New styles for nested comments */
+.comment-thread {
+  margin: 10px 0;
+  position: relative;
+}
+
+.comment-replies {
+  margin-left: 25px;
+  padding-left: 15px;
+  border-left: 2px solid var(--button-bg);
+  margin-top: 10px;
+}
+
+/* Visual distinction for different nesting levels */
+.level-0 .comment-replies {
+  border-left-color: var(--button-bg);
+}
+
+.level-1 .comment-replies {
+  border-left-color: #ff8f6b;
+}
+
+.level-2 .comment-replies {
+  border-left-color: #ffb39b;
+}
+
+.level-3 .comment-replies {
+  border-left-color: #ffd7cc;
+}
+
+.comment {
+  background: var(--card-bg);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.reply-form {
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--background-color);
+  border-radius: 6px;
+}
+
+.comment-text {
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.reply-to {
+  color: var(--button-bg);
+  font-size: 0.9em;
+}
+
+.reply-to-arrow {
+  margin: 0 4px;
+  color: var(--secondary-text);
 }
