@@ -278,3 +278,88 @@
   background: var(--button-bg);
   color: white;
 }
+
+.recipe-discussions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.recipe-discussion-card {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  text-decoration: none;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+.recipe-discussion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+.recipe-discussion-stats {
+  display: flex;
+  justify-content: space-between;
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.recipe-forum-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.recipe-forum-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.back-button {
+  color: var(--button-bg);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.recipe-card-preview {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 30px;
+  margin-bottom: 30px;
+  text-align: center;
+  box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.recipe-preview-info {
+  width: 100%;
+}
+
+.recipe-title {
+  font-size: 2rem;
+  color: var(--text-color);
+  margin: 0 0 15px 0;
+}
+
+.recipe-description {
+  color: var(--secondary-text);
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.no-discussions {
+  text-align: center;
+  padding: 40px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  color: var(--secondary-text);
+  grid-column: 1 / -1;
+  box-shadow: 0 2px 8px var(--card-shadow);
+}

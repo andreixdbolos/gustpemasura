@@ -12,9 +12,11 @@ import {
   increment,
   serverTimestamp,
   getDoc,
+  where,
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
 import "./Forum.css";
+import { Link } from "react-router-dom";
 
 const Forum = () => {
   const [posts, setPosts] = useState([]);
@@ -24,16 +26,18 @@ const Forum = () => {
   const [showComments, setShowComments] = useState({});
   const { currentUser } = useAuth();
 
+  const [recipePosts, setRecipePosts] = useState([]);
+
   const categories = [
     { id: "all", label: "All Posts" },
     { id: "recipes", label: "Recipe Discussions" },
-    { id: "general", label: "General" },
-    { id: "tips", label: "Cooking Tips" },
-    { id: "questions", label: "Questions" },
   ];
 
   useEffect(() => {
     fetchPosts();
+    if (selectedCategory === "recipes") {
+      fetchRecipePosts();
+    }
   }, [selectedCategory]);
 
   const fetchPosts = async () => {
@@ -57,6 +61,45 @@ const Forum = () => {
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
+    }
+  };
+
+  const fetchRecipePosts = async () => {
+    try {
+      const q = query(
+        collection(db, "forum_posts"),
+        where("category", "==", "recipes"),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      const posts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Group posts by recipe
+      const recipeGroups = posts.reduce((acc, post) => {
+        if (!post.recipeId) return acc; // Skip posts without recipeId
+
+        if (!acc[post.recipeId]) {
+          acc[post.recipeId] = {
+            recipeId: post.recipeId,
+            recipeName: post.recipeName,
+            posts: [],
+            lastPost: post.createdAt,
+          };
+        }
+        acc[post.recipeId].posts.push(post);
+        return acc;
+      }, {});
+
+      const recipeGroupsArray = Object.values(recipeGroups);
+      // Sort by most recent post
+      recipeGroupsArray.sort((a, b) => b.lastPost - a.lastPost);
+
+      setRecipePosts(recipeGroupsArray);
+    } catch (error) {
+      console.error("Error fetching recipe posts:", error);
     }
   };
 
@@ -87,11 +130,9 @@ const Forum = () => {
       const postDoc = await getDoc(postRef);
       const postData = postDoc.data();
 
-      // Initialize or get current votes object
       const currentVotes = postData.votes || {};
       const previousVote = currentVotes[currentUser.uid];
 
-      // If user hasn't voted yet
       if (previousVote === undefined) {
         await updateDoc(postRef, {
           likes: increment(isUpvote ? 1 : -1),
@@ -100,18 +141,15 @@ const Forum = () => {
             [currentUser.uid]: isUpvote,
           },
         });
-      }
-      // If user is changing their vote
-      else if (previousVote !== isUpvote) {
+      } else if (previousVote !== isUpvote) {
         await updateDoc(postRef, {
-          likes: increment(isUpvote ? 2 : -2), // +2 or -2 because we're switching from down to up or vice versa
+          likes: increment(isUpvote ? 2 : -2),
           votes: {
             ...currentVotes,
             [currentUser.uid]: isUpvote,
           },
         });
       }
-      // If user clicks the same button they already voted for, do nothing
 
       fetchPosts();
     } catch (error) {
@@ -148,7 +186,7 @@ const Forum = () => {
 
   return (
     <div className="forum-container">
-      <h1>Recipe Discussion Forum</h1>
+      <h1>Community Forum</h1>
 
       <div className="forum-categories">
         {categories.map((category) => (
@@ -164,105 +202,135 @@ const Forum = () => {
         ))}
       </div>
 
-      <form onSubmit={handleSubmitPost} className="post-form">
-        <textarea
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          placeholder="Share your thoughts, recipes, or ask a question..."
-          className="post-input"
-        />
-        <button type="submit" className="post-btn">
-          Post
-        </button>
-      </form>
-
-      <div className="posts-container">
-        {posts.map((post) => (
-          <div key={post.id} className="forum-post">
-            <div className="post-header">
-              <span className="post-author">{post.userName}</span>
-              <span className="post-date">
-                {post.createdAt?.toDate().toLocaleDateString()}
-              </span>
-            </div>
-            {post.category === "recipes" && (
-              <div className="recipe-reference">
-                <span className="recipe-tag">Recipe Discussion:</span>
-                <span className="recipe-name">{post.recipeName}</span>
-              </div>
-            )}
-            <div className="post-content">{post.content}</div>
-            <div className="post-footer">
-              <div className="vote-buttons">
-                <button
-                  className={`vote-btn upvote ${
-                    post.votes?.[currentUser.uid] === true ? "active" : ""
-                  }`}
-                  onClick={() => handleVote(post.id, true)}
-                  disabled={post.votes?.[currentUser.uid] === true}
-                >
-                  👍
-                </button>
-                <span className="vote-count">{post.likes || 0}</span>
-                <button
-                  className={`vote-btn downvote ${
-                    post.votes?.[currentUser.uid] === false ? "active" : ""
-                  }`}
-                  onClick={() => handleVote(post.id, false)}
-                  disabled={post.votes?.[currentUser.uid] === false}
-                >
-                  👎
-                </button>
-              </div>
-              <button
-                className="comment-btn"
-                onClick={() => toggleComments(post.id)}
+      {selectedCategory === "recipes" ? (
+        <div className="recipe-discussions-grid">
+          {recipePosts.length > 0 ? (
+            recipePosts.map((recipeGroup) => (
+              <Link
+                to={`/forum/recipe/${recipeGroup.recipeId}`}
+                key={recipeGroup.recipeId}
+                className="recipe-discussion-card"
               >
-                💬 {post.comments?.length || 0}
-              </button>
-            </div>
-
-            {showComments[post.id] && (
-              <div className="comments-section">
-                <div className="comments-list">
-                  {post.comments?.map((comment, index) => (
-                    <div key={index} className="comment">
-                      <div className="comment-header">
-                        <span className="comment-author">
-                          {comment.userName}
-                        </span>
-                        <span className="comment-date">
-                          {new Date(comment.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="comment-text">{comment.text}</div>
-                    </div>
-                  ))}
+                <h3>{recipeGroup.recipeName}</h3>
+                <div className="recipe-discussion-stats">
+                  <span>{recipeGroup.posts.length} posts</span>
+                  <span>
+                    Last post:{" "}
+                    {recipeGroup.lastPost?.toDate()?.toLocaleDateString() ||
+                      "N/A"}
+                  </span>
                 </div>
-                <div className="add-comment">
-                  <textarea
-                    value={commentText[post.id] || ""}
-                    onChange={(e) =>
-                      setCommentText((prev) => ({
-                        ...prev,
-                        [post.id]: e.target.value,
-                      }))
-                    }
-                    placeholder="Write a comment..."
-                    className="comment-input"
-                  />
+              </Link>
+            ))
+          ) : (
+            <div className="no-discussions">
+              No recipe discussions yet. Start one from your favorites!
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <form onSubmit={handleSubmitPost} className="post-form">
+            <textarea
+              value={newPost}
+              onChange={(e) => setNewPost(e.target.value)}
+              placeholder="Share your thoughts or ask a question..."
+              className="post-input"
+            />
+            <button type="submit" className="post-btn">
+              Post
+            </button>
+          </form>
+
+          <div className="posts-container">
+            {posts.map((post) => (
+              <div key={post.id} className="forum-post">
+                <div className="post-header">
+                  <span className="post-author">{post.userName}</span>
+                  <span className="post-date">
+                    {post.createdAt?.toDate().toLocaleDateString()}
+                  </span>
+                </div>
+                {post.category === "recipes" && (
+                  <div className="recipe-reference">
+                    <span className="recipe-tag">Recipe Discussion:</span>
+                    <span className="recipe-name">{post.recipeName}</span>
+                  </div>
+                )}
+                <div className="post-content">{post.content}</div>
+                <div className="post-footer">
+                  <div className="vote-buttons">
+                    <button
+                      className={`vote-btn upvote ${
+                        post.votes?.[currentUser.uid] === true ? "active" : ""
+                      }`}
+                      onClick={() => handleVote(post.id, true)}
+                      disabled={post.votes?.[currentUser.uid] === true}
+                    >
+                      👍
+                    </button>
+                    <span className="vote-count">{post.likes || 0}</span>
+                    <button
+                      className={`vote-btn downvote ${
+                        post.votes?.[currentUser.uid] === false ? "active" : ""
+                      }`}
+                      onClick={() => handleVote(post.id, false)}
+                      disabled={post.votes?.[currentUser.uid] === false}
+                    >
+                      👎
+                    </button>
+                  </div>
                   <button
-                    onClick={() => handleComment(post.id)}
-                    className="comment-submit-btn"
+                    className="comment-btn"
+                    onClick={() => toggleComments(post.id)}
                   >
-                    Comment
+                    💬 {post.comments?.length || 0}
                   </button>
                 </div>
+
+                {showComments[post.id] && (
+                  <div className="comments-section">
+                    <div className="comments-list">
+                      {post.comments?.map((comment, index) => (
+                        <div key={index} className="comment">
+                          <div className="comment-header">
+                            <span className="comment-author">
+                              {comment.userName}
+                            </span>
+                            <span className="comment-date">
+                              {new Date(comment.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="comment-text">{comment.text}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="add-comment">
+                      <textarea
+                        value={commentText[post.id] || ""}
+                        onChange={(e) =>
+                          setCommentText((prev) => ({
+                            ...prev,
+                            [post.id]: e.target.value,
+                          }))
+                        }
+                        placeholder="Write a comment..."
+                        className="comment-input"
+                      />
+                      <button
+                        onClick={() => handleComment(post.id)}
+                        className="comment-submit-btn"
+                      >
+                        Comment
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 };

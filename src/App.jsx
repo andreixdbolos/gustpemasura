@@ -11,6 +11,7 @@ import CookingHistory from "./components/CookingHistory";
 import PrivateRoute from "./components/PrivateRoute";
 import About from "./components/About";
 import Forum from "./components/Forum/Forum";
+import RecipeForum from "./components/Forum/RecipeForum";
 
 import "./App.css";
 
@@ -74,6 +75,14 @@ const App = () => {
                 element={
                   <PrivateRoute>
                     <Forum />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/forum/recipe/:recipeId"
+                element={
+                  <PrivateRoute>
+                    <RecipeForum />
                   </PrivateRoute>
                 }
               />
