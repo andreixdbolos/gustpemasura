@@ -31,6 +31,7 @@ const Forum = () => {
   const categories = [
     { id: "all", label: "All Posts" },
     { id: "recipes", label: "Recipe Discussions" },
+    { id: "about", label: "About & Help" },
   ];
 
   useEffect(() => {
@@ -115,6 +116,7 @@ const Forum = () => {
         category: selectedCategory,
         createdAt: serverTimestamp(),
         likes: 0,
+        votes: {},
         comments: [],
       });
       setNewPost("");
@@ -167,20 +169,16 @@ const Forum = () => {
 
     try {
       const postRef = doc(db, "forum_posts", postId);
-      const postDoc = await getDoc(postRef);
-      const currentComments = postDoc.data().comments || [];
-
-      const newComment = {
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        text: commentContent,
-        userId: currentUser.uid,
-        userName: currentUser.email,
-        createdAt: new Date().toISOString(),
-        replyTo: parentComment ? parentComment.userName : null,
-      };
-
       await updateDoc(postRef, {
-        comments: arrayUnion(newComment),
+        comments: arrayUnion({
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          text: commentContent.trim(),
+          userId: currentUser.uid,
+          userName: currentUser.email,
+          createdAt: new Date().toISOString(),
+          parentId: parentComment ? parentComment.id : null,
+          replyTo: parentComment ? parentComment.userName : null,
+        }),
       });
 
       if (!parentComment) {
@@ -199,51 +197,78 @@ const Forum = () => {
     const commentMap = {};
     const rootComments = [];
 
-    comments.forEach((comment, index) => {
-      const commentId = comment.id || `${comment.createdAt}-${index}`;
-      commentMap[commentId] = {
+    comments.forEach((comment) => {
+      commentMap[comment.id] = {
         ...comment,
-        id: commentId,
         replies: [],
       };
     });
 
-    comments.forEach((comment, index) => {
-      const commentId = comment.id || `${comment.createdAt}-${index}`;
-      const commentWithReplies = commentMap[commentId];
-
-      if (comment.replyTo) {
-        const parentComment = Object.values(commentMap).find(
-          (c) => c.userName === comment.replyTo
-        );
+    comments.forEach((comment) => {
+      if (comment.parentId) {
+        const parentComment = commentMap[comment.parentId];
         if (parentComment) {
-          parentComment.replies.push(commentWithReplies);
+          parentComment.replies.push(commentMap[comment.id]);
         } else {
-          rootComments.push(commentWithReplies);
+          rootComments.push(commentMap[comment.id]);
         }
       } else {
-        rootComments.push(commentWithReplies);
+        rootComments.push(commentMap[comment.id]);
       }
     });
 
     return rootComments;
   };
 
+  const handleDeleteComment = async (postId, commentToDelete) => {
+    if (commentToDelete.userId !== currentUser.uid) return;
+
+    try {
+      const postRef = doc(db, "forum_posts", postId);
+      const postDoc = await getDoc(postRef);
+      const currentComments = postDoc.data().comments || [];
+
+      // Helper function to get all reply IDs recursively
+      const getAllReplyIds = (commentId) => {
+        const replyIds = new Set();
+        currentComments.forEach((comment) => {
+          if (comment.parentId === commentId) {
+            replyIds.add(comment.id);
+            // Recursively get replies to this reply
+            getAllReplyIds(comment.id).forEach((id) => replyIds.add(id));
+          }
+        });
+        return Array.from(replyIds);
+      };
+
+      // Get all reply IDs for the comment being deleted
+      const replyIds = getAllReplyIds(commentToDelete.id);
+
+      // Filter out the comment and all its nested replies
+      const updatedComments = currentComments.filter(
+        (comment) =>
+          comment.id !== commentToDelete.id && !replyIds.includes(comment.id)
+      );
+
+      await updateDoc(postRef, {
+        comments: updatedComments,
+      });
+
+      fetchPosts();
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
   const CommentThread = ({ comment, postId, level = 0 }) => {
     const [isReplying, setIsReplying] = useState(false);
-    const [localReplyText, setLocalReplyText] = useState("");
-
-    const handleReply = () => {
-      handleComment(postId, comment, localReplyText);
-      setIsReplying(false);
-      setLocalReplyText("");
-    };
+    const [replyText, setReplyText] = useState("");
 
     return (
-      <div className={`comment-thread level-${level}`}>
+      <div className={`comment-thread level-${level}`} key={comment.id}>
         <div className="comment">
           <div className="comment-header">
-            <span className="comment-author">
+            <div className="comment-author-section">
               {comment.replyTo ? (
                 <span className="reply-to">
                   {comment.userName}
@@ -251,12 +276,21 @@ const Forum = () => {
                   {comment.replyTo}
                 </span>
               ) : (
-                comment.userName
+                <span className="comment-author">{comment.userName}</span>
               )}
-            </span>
-            <span className="comment-date">
-              {new Date(comment.createdAt).toLocaleDateString()}
-            </span>
+              <span className="comment-date">
+                {new Date(comment.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            {comment.userId === currentUser.uid && (
+              <button
+                onClick={() => handleDeleteComment(postId, comment)}
+                className="delete-comment-btn"
+                title="Delete comment"
+              >
+                🗑️
+              </button>
+            )}
           </div>
           <div className="comment-text">{comment.text}</div>
           <div className="comment-actions">
@@ -271,19 +305,28 @@ const Forum = () => {
           {isReplying && (
             <div className="reply-form">
               <textarea
-                value={localReplyText}
-                onChange={(e) => setLocalReplyText(e.target.value)}
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
                 placeholder={`Reply to ${comment.userName}...`}
                 className="comment-input"
               />
               <div className="reply-actions">
-                <button onClick={handleReply} className="comment-submit-btn">
+                <button
+                  onClick={() => {
+                    if (replyText.trim()) {
+                      handleComment(postId, comment, replyText);
+                      setIsReplying(false);
+                      setReplyText("");
+                    }
+                  }}
+                  className="comment-submit-btn"
+                >
                   Reply
                 </button>
                 <button
                   onClick={() => {
                     setIsReplying(false);
-                    setLocalReplyText("");
+                    setReplyText("");
                   }}
                   className="comment-cancel-btn"
                 >
@@ -295,7 +338,7 @@ const Forum = () => {
         </div>
 
         {comment.replies && comment.replies.length > 0 && (
-          <div className={`comment-replies level-${level}`}>
+          <div className="comment-replies">
             {comment.replies.map((reply) => (
               <CommentThread
                 key={reply.id}
@@ -334,6 +377,22 @@ const Forum = () => {
           </button>
         ))}
       </div>
+
+      {selectedCategory === "about" && (
+        <div className="about-forum-description">
+          <h2>About & Help</h2>
+          <p>
+            Welcome to our community! This is the place to:
+            <ul>
+              <li>Ask questions about how to use the platform</li>
+              <li>Share feedback and suggestions</li>
+              <li>Get help with any issues you're experiencing</li>
+              <li>Connect with other community members</li>
+            </ul>
+            Feel free to start a discussion or join existing conversations!
+          </p>
+        </div>
+      )}
 
       {selectedCategory === "recipes" ? (
         <div className="recipe-discussions-grid">

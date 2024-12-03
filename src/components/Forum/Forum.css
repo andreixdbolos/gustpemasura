@@ -185,15 +185,35 @@ h1 {
   background: none;
   border: none;
   color: var(--button-bg);
-  font-size: 0.8rem;
   cursor: pointer;
-  padding: 2px 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  padding: 4px 8px;
+  font-size: 0.9em;
+  opacity: 0.8;
+  transition: opacity 0.2s;
 }
 
 .reply-btn:hover {
-  background: rgba(255, 107, 61, 0.1);
+  opacity: 1;
+}
+
+.reply-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.comment-cancel-btn {
+  background: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.comment-cancel-btn:hover {
+  background: var(--card-bg);
 }
 
 .reply-to {
@@ -480,4 +500,51 @@ h1 {
 .reply-to-arrow {
   margin: 0 4px;
   color: var(--secondary-text);
+}
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delete-comment-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  padding: 4px;
+}
+
+.delete-comment-btn:hover {
+  opacity: 1;
+}
+
+.about-forum-description {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.about-forum-description h2 {
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+
+.about-forum-description p {
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.about-forum-description ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.about-forum-description li {
+  margin: 5px 0;
+  color: var(--text-color);
 }
