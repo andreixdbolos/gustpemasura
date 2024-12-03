@@ -27,6 +27,8 @@ const Forum = () => {
   const { currentUser } = useAuth();
 
   const [recipePosts, setRecipePosts] = useState([]);
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState("");
 
   const categories = [
     { id: "all", label: "All Posts" },
@@ -79,7 +81,7 @@ const Forum = () => {
 
       // Group posts by recipe
       const recipeGroups = posts.reduce((acc, post) => {
-        if (!post.recipeId) return acc; // Skip posts without recipeId
+        if (!post.recipeId) return acc;
 
         if (!acc[post.recipeId]) {
           acc[post.recipeId] = {
@@ -182,6 +184,28 @@ const Forum = () => {
       ...prev,
       [postId]: !prev[postId],
     }));
+  };
+
+  const handleReply = async (postId, commentId, originalAuthor) => {
+    if (!replyText.trim()) return;
+
+    try {
+      const postRef = doc(db, "forum_posts", postId);
+      await updateDoc(postRef, {
+        comments: arrayUnion({
+          text: replyText,
+          userId: currentUser.uid,
+          userName: currentUser.email,
+          createdAt: new Date().toISOString(),
+          replyTo: originalAuthor,
+        }),
+      });
+      setReplyText("");
+      setReplyingTo(null);
+      fetchPosts();
+    } catch (error) {
+      console.error("Error adding reply:", error);
+    }
   };
 
   return (
@@ -295,13 +319,61 @@ const Forum = () => {
                         <div key={index} className="comment">
                           <div className="comment-header">
                             <span className="comment-author">
-                              {comment.userName}
+                              {comment.replyTo && (
+                                <span className="reply-to">
+                                  {comment.userName}
+                                  <span className="reply-to-arrow">→</span>
+                                  {comment.replyTo}
+                                </span>
+                              )}
+                              {!comment.replyTo && comment.userName}
                             </span>
                             <span className="comment-date">
                               {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
                           </div>
                           <div className="comment-text">{comment.text}</div>
+                          <div className="comment-actions">
+                            <button
+                              className="reply-btn"
+                              onClick={() => setReplyingTo(index)}
+                            >
+                              Reply
+                            </button>
+                          </div>
+                          {replyingTo === index && (
+                            <div className="reply-form">
+                              <textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder={`Reply to ${comment.userName}...`}
+                                className="comment-input"
+                              />
+                              <div className="reply-actions">
+                                <button
+                                  onClick={() =>
+                                    handleReply(
+                                      post.id,
+                                      index,
+                                      comment.userName
+                                    )
+                                  }
+                                  className="comment-submit-btn"
+                                >
+                                  Reply
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setReplyingTo(null);
+                                    setReplyText("");
+                                  }}
+                                  className="comment-cancel-btn"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

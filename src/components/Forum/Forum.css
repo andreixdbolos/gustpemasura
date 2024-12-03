@@ -169,9 +169,48 @@ h1 {
 .comment-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.8rem;
   color: var(--secondary-text);
   margin-bottom: 5px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.reply-btn {
+  background: none;
+  border: none;
+  color: var(--button-bg);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.reply-btn:hover {
+  background: rgba(255, 107, 61, 0.1);
+}
+
+.reply-to {
+  color: var(--button-bg);
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+.reply-to-arrow {
+  margin: 0 4px;
+  color: var(--secondary-text);
+}
+
+.reply-form {
+  margin-top: 8px;
+  padding-left: 20px;
+  border-left: 2px solid var(--button-bg);
 }
 
 .comment-text {
