@@ -144,6 +144,8 @@
   perspective: 1000px;
   cursor: pointer;
   height: 400px;
+  margin-bottom: 60px;
+  position: relative;
 }
 
 .flip-card-inner {
@@ -315,4 +317,118 @@
 [data-theme="dark"] .ingredients-list li,
 [data-theme="dark"] .instructions-list li {
   color: var(--text-color);
+}
+
+.recipe-actions {
+  position: absolute;
+  bottom: -50px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  text-align: center;
+}
+
+.comment-btn {
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.comment-btn:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+.recipe-comment-form {
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 400px;
+  z-index: 1001;
+}
+
+.comment-overlay {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  border-radius: 12px;
+}
+
+.comment-input {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 1px solid rgba(255, 107, 61, 0.2);
+  border-radius: 8px;
+  margin: 8px 0 12px 0;
+  resize: vertical;
+  background: var(--header-bg);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.comment-input:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(255, 107, 61, 0.1);
+}
+
+.comment-submit-btn {
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.comment-submit-btn:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+.close-comment-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 8px;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  z-index: 1002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+}
+
+.close-comment-btn:hover {
+  transform: scale(1.1);
+  color: var(--button-bg);
+  background: rgba(255, 107, 61, 0.1);
 }

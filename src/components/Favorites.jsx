@@ -127,20 +127,46 @@ const RecipeCard = ({ recipe, userId, onFavoriteChange }) => {
       </div>
 
       {showComments && (
-        <div
-          className="recipe-comment-form"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <textarea
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder="Share your thoughts about this recipe..."
-            className="comment-input"
+        <>
+          <div
+            className="comment-overlay"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowComments(false);
+            }}
           />
-          <button onClick={handleComment} className="comment-submit-btn">
-            Post Discussion
-          </button>
-        </div>
+          <div
+            className="recipe-comment-form"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close-comment-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowComments(false);
+              }}
+              aria-label="Close comment form"
+            >
+              ×
+            </button>
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Share your thoughts about this recipe..."
+              className="comment-input"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleComment();
+              }}
+              className="comment-submit-btn"
+            >
+              Post Discussion
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,3 +1,8 @@
+h1 {
+  display: flex;
+  justify-content: center;
+}
+
 .forum-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -247,14 +252,16 @@
 
 .recipe-comment-form {
   position: absolute;
-  bottom: -150px;
-  left: 0;
-  right: 0;
+  top: 50%;
+  left: 52%;
+  transform: translate(-50%, -50%);
   background: var(--card-bg);
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px var(--card-shadow);
-  z-index: 10;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 400px;
+  z-index: 100005;
 }
 
 .recipe-actions {
@@ -362,4 +369,16 @@
   color: var(--secondary-text);
   grid-column: 1 / -1;
   box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.comment-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 100004;
+  border-radius: 16px;
 }
