@@ -64,6 +64,12 @@ const Navbar = () => {
           My Cooking History
         </button>
         <button
+          onClick={() => handleNavigation("/forum")}
+          className="nav-button"
+        >
+          Forum
+        </button>
+        <button
           onClick={() => handleNavigation("/about")}
           className="nav-button"
         >

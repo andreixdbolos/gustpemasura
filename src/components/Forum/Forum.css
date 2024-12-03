@@ -1,0 +1,280 @@
+.forum-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.forum-categories {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.category-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--button-bg);
+  background: transparent;
+  color: var(--button-bg);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.category-btn.active,
+.category-btn:hover {
+  background: var(--button-bg);
+  color: white;
+}
+
+.post-form {
+  margin-bottom: 30px;
+}
+
+.post-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 15px;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  resize: vertical;
+}
+
+.post-btn {
+  background: var(--button-bg);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.post-btn:hover {
+  background: var(--button-hover);
+}
+
+.forum-post {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+}
+
+.post-content {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.post-footer {
+  display: flex;
+  gap: 15px;
+}
+
+.like-btn,
+.comment-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--secondary-text);
+  transition: all 0.3s ease;
+}
+
+.like-btn:hover,
+.comment-btn:hover {
+  color: var(--button-bg);
+}
+
+.vote-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vote-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.vote-btn:not(:disabled):hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.vote-btn.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.vote-btn:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.vote-btn.upvote.active {
+  color: #2ecc71;
+}
+
+.vote-btn.downvote.active {
+  color: #e74c3c;
+}
+
+.vote-count {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.comments-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--input-border);
+}
+
+.comments-list {
+  margin-bottom: 15px;
+}
+
+.comment {
+  padding: 10px;
+  margin-bottom: 10px;
+  background: var(--background-color);
+  border-radius: 6px;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--secondary-text);
+  margin-bottom: 5px;
+}
+
+.comment-text {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.add-comment {
+  display: flex;
+  gap: 10px;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 60px;
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.comment-submit-btn {
+  padding: 8px 16px;
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.comment-submit-btn:hover {
+  background: var(--button-hover);
+}
+
+@media (max-width: 768px) {
+  .forum-container {
+    padding: 10px;
+  }
+
+  .forum-categories {
+    justify-content: center;
+  }
+
+  .category-btn {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+
+  .add-comment {
+    flex-direction: column;
+  }
+
+  .comment-submit-btn {
+    width: 100%;
+  }
+}
+
+.recipe-reference {
+  background: var(--header-bg);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.recipe-tag {
+  color: var(--button-bg);
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.recipe-name {
+  color: var(--text-color);
+}
+
+.recipe-comment-form {
+  position: absolute;
+  bottom: -150px;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  z-index: 10;
+}
+
+.recipe-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+.recipe-actions .comment-btn {
+  background: none;
+  border: 2px solid var(--button-bg);
+  color: var(--button-bg);
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.recipe-actions .comment-btn:hover {
+  background: var(--button-bg);
+  color: white;
+}

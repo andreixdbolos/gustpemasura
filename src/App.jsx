@@ -10,6 +10,7 @@ import ThemeToggle from "./components/ThemeToggle";
 import CookingHistory from "./components/CookingHistory";
 import PrivateRoute from "./components/PrivateRoute";
 import About from "./components/About";
+import Forum from "./components/Forum/Forum";
 
 import "./App.css";
 
@@ -68,6 +69,14 @@ const App = () => {
                 }
               />
               <Route path="/about" element={<About />} />
+              <Route
+                path="/forum"
+                element={
+                  <PrivateRoute>
+                    <Forum />
+                  </PrivateRoute>
+                }
+              />
             </Routes>
             <ThemeToggle />
           </div>

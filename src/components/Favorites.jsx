@@ -8,6 +8,8 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { FaHeart, FaMinus } from "react-icons/fa";
@@ -15,6 +17,9 @@ import "./Favorites.css";
 
 const RecipeCard = ({ recipe, userId, onFavoriteChange }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const { currentUser } = useAuth();
 
   const handleClick = (e) => {
     if (e.target.closest(".remove-btn")) {
@@ -31,6 +36,29 @@ const RecipeCard = ({ recipe, userId, onFavoriteChange }) => {
       onFavoriteChange();
     } catch (error) {
       console.error("Error removing favorite:", error);
+    }
+  };
+
+  const handleComment = async () => {
+    if (!commentText.trim()) return;
+
+    try {
+      await addDoc(collection(db, "forum_posts"), {
+        content: commentText,
+        userId: currentUser.uid,
+        userName: currentUser.email,
+        category: "recipes",
+        createdAt: serverTimestamp(),
+        likes: 0,
+        votes: {},
+        comments: [],
+        recipeId: recipe.id,
+        recipeName: recipe.name,
+      });
+      setCommentText("");
+      setShowComments(false);
+    } catch (error) {
+      console.error("Error creating recipe discussion:", error);
     }
   };
 
@@ -86,6 +114,34 @@ const RecipeCard = ({ recipe, userId, onFavoriteChange }) => {
           </div>
         </div>
       </div>
+      <div className="recipe-actions">
+        <button
+          className="comment-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowComments(!showComments);
+          }}
+        >
+          💬 Discuss Recipe
+        </button>
+      </div>
+
+      {showComments && (
+        <div
+          className="recipe-comment-form"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Share your thoughts about this recipe..."
+            className="comment-input"
+          />
+          <button onClick={handleComment} className="comment-submit-btn">
+            Post Discussion
+          </button>
+        </div>
+      )}
     </div>
   );
 };
