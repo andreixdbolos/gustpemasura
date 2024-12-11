@@ -150,17 +150,52 @@ const RecipeForum = () => {
 
     try {
       const postRef = doc(db, "forum_posts", postId);
+      const postDoc = await getDoc(postRef);
+      const postData = postDoc.data();
+
+      const newComment = {
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        text: commentContent.trim(),
+        userId: currentUser.uid,
+        userName: currentUser.email,
+        createdAt: new Date().toISOString(),
+        parentId: parentComment ? parentComment.id : null,
+        replyTo: parentComment ? parentComment.userName : null,
+      };
+
       await updateDoc(postRef, {
-        comments: arrayUnion({
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          text: commentContent.trim(),
-          userId: currentUser.uid,
-          userName: currentUser.email,
-          createdAt: new Date().toISOString(),
-          parentId: parentComment ? parentComment.id : null,
-          replyTo: parentComment ? parentComment.userName : null,
-        }),
+        comments: arrayUnion(newComment),
       });
+
+      // Create notification for post owner if it's a new comment
+      if (!parentComment && postData.userId !== currentUser.uid) {
+        await addDoc(collection(db, "notifications"), {
+          recipientId: postData.userId,
+          senderId: currentUser.uid,
+          senderName: currentUser.email,
+          type: "comment",
+          postId,
+          recipeName: recipeName,
+          content: commentContent.trim(),
+          createdAt: serverTimestamp(),
+          read: false,
+        });
+      }
+
+      // Create notification for comment owner if it's a reply
+      if (parentComment && parentComment.userId !== currentUser.uid) {
+        await addDoc(collection(db, "notifications"), {
+          recipientId: parentComment.userId,
+          senderId: currentUser.uid,
+          senderName: currentUser.email,
+          type: "reply",
+          postId,
+          recipeName: recipeName,
+          content: commentContent.trim(),
+          createdAt: serverTimestamp(),
+          read: false,
+        });
+      }
 
       if (!parentComment) {
         setCommentText((prev) => ({ ...prev, [postId]: "" }));
